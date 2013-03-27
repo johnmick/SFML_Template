@@ -1,11 +1,8 @@
-
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Audio.hpp>
-#include <iomanip>
+#include <SFML/Graphics.hpp>
 #include <iostream>
-
 
 ////////////////////////////////////////////////////////////
 /// Entry point of application
@@ -15,35 +12,57 @@
 ////////////////////////////////////////////////////////////
 int main()
 {
-  // Load a sound buffer from a wav file
-  sf::SoundBuffer Buffer;
-  if (!Buffer.LoadFromFile("sound.wav"))
-  return EXIT_FAILURE;
+  // Create main window
+  sf::RenderWindow App(sf::VideoMode(800, 600), "SFML Shapes");
 
-  // Display sound informations
-  std::cout << "sound.wav :" << std::endl;
-  std::cout << " " << Buffer.GetDuration()      << " sec"           << std::endl;
-  std::cout << " " << Buffer.GetSampleRate()    << " samples / sec" << std::endl;
-  std::cout << " " << Buffer.GetChannelsCount() << " channels"      << std::endl;
-
-  // Create a sound instance and play it
-  sf::Sound Sound(Buffer);
-  Sound.Play();
-
-  // Loop while the sound is playing
-  while (Sound.GetStatus() == sf::Sound::Playing)
+  // Start game loop
+  while (App.IsOpened())
   {
-    // Display the playing position
-    std::cout << "\rPlaying... " << std::fixed << std::setprecision(2) << Sound.GetPlayingOffset() << " sec";
+    // Process events
+    sf::Event Event;
+    while (App.GetEvent(Event))
+    {
+      // Close window : exit
+      if (Event.Type == sf::Event::Closed)
+      App.Close();
+    }
 
-    // Leave some CPU time for other threads
-    sf::Sleep(0.1f);
+    // Clear screen
+    App.Clear();
+
+    // Draw predefined shapes
+    App.Draw(sf::Shape::Line(10, 10, 710, 100, 15, sf::Color::Red));
+    App.Draw(sf::Shape::Circle(200, 200, 100, sf::Color::Yellow, 10, sf::Color::Blue));
+    App.Draw(sf::Shape::Rectangle(350, 200, 600, 350, sf::Color::Green));
+
+    // Build a custom convex shape
+    sf::Shape Polygon;
+    Polygon.AddPoint(0, -50,  sf::Color(255, 0, 0),     sf::Color(0, 128, 128));
+    Polygon.AddPoint(50, 0,   sf::Color(255, 85, 85),   sf::Color(0, 128, 128));
+    Polygon.AddPoint(50, 50,  sf::Color(255, 170, 170), sf::Color(0, 128, 128));
+    Polygon.AddPoint(0, 100,  sf::Color(255, 255, 255), sf::Color(0, 128, 128));
+    Polygon.AddPoint(-50, 50, sf::Color(255, 170, 170), sf::Color(0, 128, 128));
+    Polygon.AddPoint(-50, 0,  sf::Color(255, 85, 85),   sf::Color(0, 128, 128));
+
+    // Define an outline width
+    Polygon.SetOutlineWidth(10);
+
+    // Disable filling and enable the outline
+    Polygon.EnableFill(false);
+    Polygon.EnableOutline(true);
+
+    // We can still use the functions common to all SFML drawable objects
+    Polygon.SetColor(sf::Color(255, 255, 255, 200));
+    Polygon.Move(300, 300);
+    Polygon.Scale(3, 2);
+    Polygon.Rotate(45);
+
+    // Draw it
+    App.Draw(Polygon);
+
+    // Finally, display the rendered frame on screen
+    App.Display();
   }
-  std::cout << std::endl;
-
-  // Wait until the user presses 'enter' key
-  std::cout << "Press enter to exit..." << std::endl;
-  std::cin.ignore(10000, '\n');
 
   return EXIT_SUCCESS;
 }
